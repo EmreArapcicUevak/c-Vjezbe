@@ -1,92 +1,152 @@
 #include <iostream>
 
 using namespace std;
+/*
+class Dot {
+	// ovdje je isto private podrucje
+	
+	public:
+		Dot(float x = 0, float y = 0) {
+			this->x = x;
+			this->y = y;
+			Print();
+			cout << "Pozvlai smo konstruktor" << endl;
+		}
+		
+		~Dot() {
+			cout << "Pozvali smo destruktor" << endl;
+		}
+		
+		void Print() {
+			cout << "(" << x << "," << y << ")" << endl;
+		}
+		
+	protected:
+	private:
+		float x , y;
+}test;
+*/
+ /*
+class ID {
+	
+	int a;
+	
+	public:
+		static void print() {
+			cout << "e" << endl;
+		}
+		
+		static int add(int a , int b) {
+			return a + b;
+		}
+		
+		void printA() {
+			cout << a << endl;
+		}
+};
+*/
 
-struct Film {
-	string ime , kategorija;
-	unsigned int godinaIzdanja;
+
+/*
+class Position {
+		float x,y;
+	public:
+		Position(float x = 0, float y = 0) {
+			SetXY(x , y);
+			cout << "Pozvlai smo konstruktor" << endl;
+		}
+		
+		~Position() {
+			cout << "Pozvali smo destruktor" << endl;
+		}
+		
+		void SetXY(float x, float y) {
+			this->x = x;
+			this->y = y;
+		}
+		
+		void PrintPosition() const {
+			cout << "(" << x << "," << y << ")" << endl;
+		}
+};
+*/
+
+class PodesiBroj;
+
+class SakriveniBroj{
+	int *x;
+	
+	public:
+		SakriveniBroj(int x = 0) {
+			this->x = new int(x);
+		}
+		
+		SakriveniBroj(const SakriveniBroj& ClassToCopy) {
+			this->x = new int(*(ClassToCopy.x));
+		}
+		
+		~SakriveniBroj() {
+			delete this->x;
+		}
+
+		
+		void printX(){
+			cout << *x << endl;
+		}
+		
+		friend void SetX(int , SakriveniBroj *);
+		friend PodesiBroj;
+}sb;
+
+class PodesiBroj {
+	
+	public:
+		static void SetX(int x , SakriveniBroj * Broj) {
+			*(Broj->x) = x;
+		}
 };
 
-struct Test {
-	int a , b;
-}E;
-
-struct Vrijeme {
-	short unsigned int sat , minuta , sekunda;
-};
-
-void printTime(Vrijeme *V) {
-	cout <<V->sat<< ":" << V->minuta << "::" << V->sekunda << endl;
-}
-
-void dodajSat(Vrijeme *V , unsigned int forwardTime) {
-	V->sat += forwardTime;
-	
-	if (V->sat >= 24) {
-		V->sat -= 24;
-	}
-}
-
-void dodajMin(Vrijeme *V , unsigned int forwardTime) {
-	V->minuta += forwardTime;
-	
-	if (V->minuta >= 60) {
-		V->minuta -= 60;
-		dodajSat(V , 1);
-	}
-}
-
-void dodajSekudne(Vrijeme *V , unsigned int forwardTime) {
-	V->sekunda += forwardTime;
-	
-	if (V->sekunda >= 60) {
-		V->sekunda -= 60;
-		dodajMin(V , 1);
-	}
-}
-
-void pomjeritiPoSekundi(Vrijeme *V , unsigned int forwardTime) {
-	unsigned int Sekundih = (forwardTime % 60) , Minuta = forwardTime / 60 , Satih;
-	Satih = Minuta / 60; 
-	
-	dodajSat(V , Satih);
-	dodajMin(V , Minuta);
-	dodajSekudne(V , Sekundih);
-	
-	cout << Sekundih << " " << Minuta << " " << Satih << endl;
-}
-
-void pomjeritiPoMinuti(Vrijeme *V , unsigned int forwardTime) {
-	unsigned int  Minuta = forwardTime % 60 , Satih = forwardTime / 60;
-	
-	dodajSat(V , Satih);
-	dodajMin(V , Minuta);
-	
-	cout << Minuta << " " << Satih << endl;
-}
-
-void pomjeritiPoSatu(Vrijeme *V , unsigned int forwardTime) {
-	dodajSat(V , forwardTime);
+void SetX(int x , SakriveniBroj * Broj) {
+	*(Broj->x) = x;
 }
 
 int main(int argc, char** argv) {
-	Film A;
+	//std::cout << test.x; ovo ne moze jer je x private
+	/*ID test2;
 	
-	//cout << A.godinaIzdanja;
-	//cout << &E.a << " " << &E.b << " - " << sizeof(E.a);
+	test2.print();
+	ID::print();
+	cout << endl << ID::add(1 , 2);
+	test2.printA();*/
 	
-	/* 
-		Napraviti strukturu po imenu vrijeme i u toj strukturi napraviti varijable po imeni Sat , Minuta , Sekunda i onda napraviti 3 funkcije po imenima , pomjeritiPoSekundi , pomjeritiPoMinuti , pomjeritiPoSatu
-		ovo funkcije sve uzimaju 2 paramtera jedan int i pointer za structuru , int ce biti broj (minuta ili sekunde ili sata) koji ce nam reci koliko da pomjerimo vrijeme unazad ili unaprijed
+	/*
+	Position dog;
+	Position const house(100 , 100);
+	
+	dog.SetXY(0.1 , 1);
+	dog.PrintPosition();
+	
+	//house.SetXY(150,150);
+	house.PrintPosition();*/
+	
+	/*
+	SetX(69 , &sb);
+	PodesiBroj::SetX(10 , &sb);
+	sb.printX();
+	SetX(20 , &sb); 
+	
 	*/
+	PodesiBroj::SetX(10 ,&sb);
 	
-	Vrijeme PocetnoVrijeme;
-	PocetnoVrijeme.sat = PocetnoVrijeme.minuta = PocetnoVrijeme.sekunda = 0;
-	pomjeritiPoSatu(&PocetnoVrijeme , 23);
-	pomjeritiPoSekundi(&PocetnoVrijeme , 800);
-	pomjeritiPoMinuti(&PocetnoVrijeme , 40);
-	printTime(&PocetnoVrijeme);
+	SakriveniBroj sb2(sb);
+	PodesiBroj::SetX(5 ,&sb2);
+	
+	sb.printX();
+	sb2.printX();
+	
 	
 	return 0;
 }
+
+
 
