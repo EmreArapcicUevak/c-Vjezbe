@@ -3,113 +3,47 @@
 
 using namespace std;
 
+template<class someType>
 
-class Point {
-	protected:
-		int x;
+class Test {
+	private:
+		someType obj;
 	public:
-		Point() {
-			this->x = 0;
+		Test(someType obj) {
+			this->obj = obj;
 		}
 
-		Point(int x) {
-			setX(x);
+		void print() {
+			cout << obj << endl;
 		}
-
-
-		Point(const Point &obj) {
-			setX(obj.x);
-		}
-		
-		~Point(){};
-
-		int getX() const {return x;}
-		void setX(int x) {this->x = x;}
 };
 
+template<class someType>
 
-class Point2D : public Point {
-	protected:
-		int y;
-	public:
-		Point2D() : Point() {
-			this->y = 0;
-		}
-
-		Point2D(int x , int y) : Point(x) {
-			cout << "Init constructor called" << endl;
-			setY(y);
-		}
-
-		Point2D(const Point2D &obj) : Point(obj) {
-			cout << "Copy contructor called" << endl;
-			setY(obj.y);
-		}
-
-		~Point2D(){}
-
-		int getY() const {return y;}
-		void setY(int y) {this->y = y;}
-
-		void printXY() const {
-			cout << x << " , " << y << endl;
-		}
-		
-		void setXY(int x , int y) {
-			setX(x);
-			setY(y);
-		}
-
-		const Point2D &operator= (const Point2D &obj) {
-			cout << "Assignment running" << endl;
-			setXY(obj.x , obj.y);
-
-			return *this;
-		}
-
-		friend ostream &operator<<(ostream & , const Point2D &);
-		friend Point2D operator+(const Point2D& , const Point2D&);
-		friend fstream &operator<<(fstream & ,const Point2D&);
-};
-
-
-ostream &operator<<(ostream &out , const Point2D &obj) {
-			out << obj.x << " , " << obj.y;
-			return out;
+void print(someType n) {
+	cout << "Template version -> " <<  n << endl;
 }
 
-fstream &operator<<(fstream &file ,const Point2D& obj) {
-	file << obj.x << " , " << obj.y;
-	return file;
+
+void print(int n) {
+	cout << "Int version -> " <<  n << endl;
 }
-Point2D operator+(const Point2D& obj1 , const Point2D& obj2) {
-	return Point2D(obj1.x + obj2.x , obj1.y + obj2.y);
+
+template<class someType>
+void show(){
+	cout << someType() << endl;
 }
+
 
 int main(int argc, char** argv) {
-	ofstream fileHandler;
-	fileHandler.open("DotTest.txt");
+	Test<int> a(1);
+	a.print();
 
+	print(1);
+	print<int>(1);
+	print<>(1);
+	print(1.1);
 
-	Point2D prvaTacka(1 , 5);
-	Point2D drugaTacka = prvaTacka; // drugaTacka(prvaTacka)
-
-	drugaTacka.setY(2);
-
-	prvaTacka.setY(7);
-
-	drugaTacka = prvaTacka;
-	drugaTacka.printXY();
-	cout << drugaTacka << endl;
-
-	prvaTacka.setXY(5 , 5);
-	drugaTacka = prvaTacka;
-
-	prvaTacka = prvaTacka + drugaTacka + drugaTacka;
-
-	cout << prvaTacka << endl;
-	fileHandler << prvaTacka << " | " << drugaTacka; // isto kao operator<<(operator<<(operator<<(fileHandler , prvaTacka) , "|") , drugaTacka);
-	
-	fileHandler.close();
+	show<int>();
 	return 0;
 }
