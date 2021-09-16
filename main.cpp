@@ -1,49 +1,59 @@
 #include <iostream>
-#include <fstream>
 
 using namespace std;
+template <class type>
+bool match(type someText) {
+	return someText.size() >= 3;
+}
 
-template<class someType>
+template <class type>
+bool match2(type someText) { 
+	return someText[0] == 'E';
+}
 
-class Test {
-	private:
-		someType obj;
-	public:
-		Test(someType obj) {
-			this->obj = obj;
-		}
+template <class type>
+unsigned int Prebroji(type arr[] , unsigned int size , bool (*match)(type) ) {
+	unsigned int counter = 0;
+	
+	for (unsigned int i = 0 ; i < size ; i++) {
+		if (	match(arr[i])	)
+			counter++;
+	}
 
-		void print() {
-			cout << obj << endl;
-		}
+	return counter;
+}
+
+void printHello() {
+	cout << "Hello" << endl;
+}
+
+
+
+struct MatchTest {
+	bool operator()(string &text) {
+		return text == "ab";
+	}
 };
 
-template<class someType>
-
-void print(someType n) {
-	cout << "Template version -> " <<  n << endl;
-}
-
-
-void print(int n) {
-	cout << "Int version -> " <<  n << endl;
-}
-
-template<class someType>
-void show(){
-	cout << someType() << endl;
-}
 
 
 int main(int argc, char** argv) {
-	Test<int> a(1);
-	a.print();
+	
+	MatchTest a;
+	
+	void (*pFunc)() = printHello;
+	pFunc();
 
-	print(1);
-	print<int>(1);
-	print<>(1);
-	print(1.1);
+	string TextArr[] = {"ab" , "abc" , "Emre" , "Muhammed" , "ab"};
+	
+	cout << "Imamo " << Prebroji(TextArr , 5 , match) << " stringova cija je velicina veca ili jednaka 3" << endl;
+	cout << "Imamo " << Prebroji(TextArr , 5 , match2) << " stringova koji pocinju sa velikim slovom E" << endl;
+	
+	for (unsigned int i = 0 ; i < 5 ; i++) {
+		if (	a(TextArr[i])	)
+			cout << "ab found" << endl;
+	}
 
-	show<int>();
+
 	return 0;
 }
