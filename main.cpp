@@ -9,6 +9,9 @@ struct Node{
 };
 
 template <class myT>
+class ListIterator;
+
+template <class myT>
 class List{
     private:
         Node<myT> *Start;
@@ -23,16 +26,18 @@ class List{
         }
 
         void CopyList(const List<myT> &objToCopy) {
-            cout << "Copy list" << endl;
             const unsigned int size = objToCopy.GetSize();
+            ListIterator<myT> objIt = objToCopy;
             this->Size = 0;
 
-            for (unsigned int i = 0 ; i < size ; i++)
-                this->Push(objToCopy[i]);
+            for (unsigned int i = 0 ; i < size ; i++){
+                this->Push(objIt.getValue());
+                if (i != size - 1)
+                    objIt++;
+            }
         }
 
         void DeleteEntireList() {
-            cout << "Delete list" << endl;
             Node<myT> *CurPointer = Start;
 
             while(CurPointer->Next != NULL) {
@@ -42,6 +47,8 @@ class List{
  
             delete CurPointer;
         }
+
+        friend ListIterator<myT>;
     public:
         List(){
             this->Start = this->End = NULL;
@@ -144,20 +151,86 @@ class List{
         }
 };
 
-int main(int argc, char** argv) {
-    List<int> a;
-    List<int> b;
-    b.Push(9);
+template<class myT>
+class ListIterator {
+    private:
+        Node<myT> *CurNode;
+    public:
+        ListIterator() {
+            CurNode = NULL;
+        }
 
-    a.Push(1);
-    a.Push(3);
-    a.Insert(2 , 1);
-    a.Shift(0);
-    a.Insert(-1 , 0);
-    b = a;
-    
-    for (unsigned int i = 0 ; i < b.GetSize() ; i++)
-        cout << b[i] << endl;
+        ListIterator(const Node<myT> *CurNode) {
+            this->CurNode = CurNode;
+        }
+
+        ListIterator(const List<myT> &ListObj) {
+            this->CurNode = ListObj.Start;
+        }
+
+        ListIterator(const ListIterator<myT> &ListIteratorObj) {
+            this->CurNode = ListIteratorObj.CurNode;
+        }
+
+        ~ListIterator(){}
+
+        void operator++(int increment){
+             if (this->CurNode->Next == NULL)
+                    throw "End reached";
+                else
+                    this->CurNode = this->CurNode->Next;
+        }
+
+        void operator--(int decrement){
+            if (this->CurNode->Previous == NULL)
+                    throw "Beggining reached";
+                else
+                    this->CurNode = this->CurNode->Previous;
+        }
+
+
+        bool AtTheEnd() const {return this->CurNode->Next == NULL;}
+        myT getValue() const {return this->CurNode->Data;}
+
+        friend ostream &operator<<(ostream &out ,const ListIterator<myT> &obj) {
+            out << obj.CurNode->Data;
+            return out;
+        }
+};
+
+int main(int argc, char** argv) {
+    try {
+        List<int> a;
+        List<int> b;
+        b.Push(9);
+
+        a.Push(1);
+        a.Push(3);
+        a.Insert(2 , 1);
+        a.Shift(0);
+        a.Insert(-1 , 0);
+        b = a;
+        
+
+        for (unsigned int i = 0 ; i < b.GetSize() ; i++)
+            cout << b[i] << endl;
+            
+        cout << endl;
+
+
+        for (ListIterator<int> be = b ; !be.AtTheEnd(); be++) {
+            cout << be << endl;
+        }
+
+
+        ListIterator<int> be = b;
+        be++;
+        be++;
+        be--;
+        cout << be;
+    }catch (const char *errorMsg) {
+        cout << errorMsg;
+    }
     return 0;
 }
 
