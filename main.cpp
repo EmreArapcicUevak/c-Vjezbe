@@ -4,8 +4,8 @@ using namespace std;
 template <class myT>
 struct Node{
     myT Data;
-    Node<myT> *Previous;
-    Node<myT> *Next;
+    Node<myT> *Previous = NULL;
+    Node<myT> *Next = NULL;
 };
 
 template <class myT>
@@ -126,6 +126,33 @@ class List{
             }    
         }
 
+
+        void Delete(unsigned int index) {
+            if(index >= this->Size)
+                cout << "Index to big for deleting";
+            
+            Node<myT> *CurPointer = Start;
+
+            for(unsigned int i = 0; i < index; i++)
+                CurPointer = CurPointer->Next;
+
+
+            if (CurPointer->Previous != NULL)
+                CurPointer->Previous->Next = CurPointer->Next;
+            else
+                this->Start = CurPointer->Next;
+            
+
+            if (CurPointer->Next != NULL) 
+                CurPointer->Next->Previous = CurPointer->Previous;
+            else
+                this->End = CurPointer->Previous;
+            
+                
+            this->Size--;
+            delete CurPointer;
+        }
+
         myT operator[](const unsigned int &Index) const{
             if(Index >= this->Size)
                 throw "Index prevelk";
@@ -148,6 +175,8 @@ class List{
         const List<myT> &operator=(const List<myT> &objToCopy) {
             DeleteEntireList();
             CopyList(objToCopy);
+
+            return *this;
         }
 };
 
@@ -188,6 +217,15 @@ class ListIterator {
                     this->CurNode = this->CurNode->Previous;
         }
 
+        const ListIterator<myT> &operator=(const List<myT> &ListObj) {
+           this->CurNode = ListObj.Start;
+            return *this;
+        }
+
+        const ListIterator<myT> &operator=(const ListIterator<myT> &ListIteratorObj) {
+            this->CurNode = ListIteratorObj.CurNode;
+            return *this;
+        }
 
         bool AtTheEnd() const {return this->CurNode->Next == NULL;}
         myT getValue() const {return this->CurNode->Data;}
@@ -210,20 +248,25 @@ int main(int argc, char** argv) {
         a.Shift(0);
         a.Insert(-1 , 0);
         b = a;
-        
+       
 
         for (unsigned int i = 0 ; i < b.GetSize() ; i++)
             cout << b[i] << endl;
-            
+
+        cout << endl;
+        b.Delete(0);
+        b.Delete(b.GetSize() - 1);
         cout << endl;
 
 
         for (ListIterator<int> be = b ; !be.AtTheEnd(); be++) {
             cout << be << endl;
         }
+        cout << b[b.GetSize() - 1] << endl << endl;
 
 
-        ListIterator<int> be = b;
+        ListIterator<int> be = a;
+        be = b;
         be++;
         be++;
         be--;
