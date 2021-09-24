@@ -42,6 +42,27 @@ class SorthingAlgorithm {
                     break;
     }
 
+    static void quickSort(myT *Arr , const unsigned int size , bool (*passFunc)(myT , myT)) {
+        unsigned int pivitPoint = 0;
+
+        for (unsigned int i = 1 ; i < size ; i++) {
+            if (  passFunc(Arr[pivitPoint] , Arr[i])  ) {
+                swap(Arr[pivitPoint] , Arr[i]);
+                if (i - pivitPoint > 1)
+                    swap(Arr[pivitPoint + 1] , Arr[i]);
+
+                pivitPoint++;
+            }
+        }
+
+        if (pivitPoint > 1)
+            quickSort(Arr , pivitPoint , passFunc);
+
+        const unsigned int rightSize = size - 1 - pivitPoint;
+
+        if (rightSize > 1)
+            quickSort( Arr + pivitPoint + 1 , rightSize , passFunc);
+    }
 };
 
 template<class myT>
@@ -67,13 +88,13 @@ void printArr(myT *Arr , const unsigned int size) {
 
 int main(int argc, char** argv) {
     try {
-        int Arr[] = {1,5,2,3};
+        int Arr[] = {7,3,6,2,4,20,1,50,5 , 1 , 1, 1 , 3 , 200 , 3};
 
-        SorthingAlgorithm<int>::insertionSort(Arr , 4 , LowToHigh<int>);
-        printArr<int>(Arr , 4);
+        printArr<int>(Arr , sizeof(Arr) / sizeof(Arr[0]));
+        SorthingAlgorithm<int>::insertionSort(Arr , sizeof(Arr) / sizeof(Arr[0]) , HighToLow<int>);
+        printArr<int>(Arr , sizeof(Arr) / sizeof(Arr[0]));
     }catch (const char *errorMsg) {
         cout << errorMsg;
     }
     return 0;
 }
-
