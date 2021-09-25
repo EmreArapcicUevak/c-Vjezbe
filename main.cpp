@@ -63,6 +63,52 @@ class SorthingAlgorithm {
         if (rightSize > 1)
             quickSort( Arr + pivitPoint + 1 , rightSize , passFunc);
     }
+
+    static void mergeSort(myT *Arr , const unsigned int size , bool (*passFunc)(myT , myT)) {
+        if (size == 1)
+            return;
+        
+        const unsigned int midPoint = size / 2; // velicina lijevog niza je midPoint a velicina desnog je size - midPoint
+        const unsigned int rightArrSize = size - midPoint;
+
+        mergeSort(Arr , midPoint , passFunc); // Lijevi niz
+        mergeSort(Arr + midPoint , rightArrSize , passFunc); // Desni niz
+
+        myT leftArr[midPoint] ,  rightArr[rightArrSize];
+		
+        for (unsigned int i = 0 ; i < midPoint ; i++)
+            leftArr[i] = Arr[i];
+
+
+        for (unsigned int i = 0 ; i < rightArrSize ; i++)
+            rightArr[i] = Arr[midPoint + i];
+
+        unsigned int L , R , C ;
+        L = R = C = 0;
+
+        while (L < midPoint && R < rightArrSize) {
+            if (passFunc(leftArr[L] , rightArr[R])) { // Upisi elemenat sa desnog niza kada bude true a obrnuto kada bude false
+                Arr[C] = rightArr[R];
+                R++;
+            } else {
+                Arr[C] = leftArr[L];
+                L++;
+            }
+            C++;
+        }
+
+        while (L < midPoint){
+            Arr[C] = leftArr[L];
+            L++;
+            C++;
+        }
+
+        while (R < rightArrSize){
+            Arr[C] = rightArr[R];
+            R++;
+            C++;
+        }
+    }
 };
 
 template<class myT>
@@ -88,10 +134,10 @@ void printArr(myT *Arr , const unsigned int size) {
 
 int main(int argc, char** argv) {
     try {
-        int Arr[] = {7,3,6,2,4,20,1,50,5 , 1 , 1, 1 , 3 , 200 , 3};
+        int Arr[] = {1,2,3,3,5,6,12};
 
         printArr<int>(Arr , sizeof(Arr) / sizeof(Arr[0]));
-        SorthingAlgorithm<int>::insertionSort(Arr , sizeof(Arr) / sizeof(Arr[0]) , HighToLow<int>);
+        SorthingAlgorithm<int>::mergeSort(Arr , sizeof(Arr) / sizeof(Arr[0]) , HighToLow<int>);
         printArr<int>(Arr , sizeof(Arr) / sizeof(Arr[0]));
     }catch (const char *errorMsg) {
         cout << errorMsg;
