@@ -2,113 +2,110 @@
 using namespace std;
 
 template<class myT>
-class SorthingAlgorithm {
-    public:
-    
-    static void bubbleSort(myT *Arr ,const unsigned int size , bool (*passFunc)(myT , myT)) {
-        bool sorting;
+struct Node{
+  myT Data;
+  Node<myT> *Parent;
+  Node<myT> *Left;
+  Node<myT> *Right;
+};
 
-        do {
-            sorting = false;
-            for (unsigned int i = 0 ; i < size - 1 ; i++) {
-                if (passFunc(Arr[i] , Arr[i+1])){
-                    swap(Arr[i] , Arr[i+1]);
-                    sorting = true;
-                }
-            }
-        } while(sorting);
-    }
-
-    static void selectionSort(myT *Arr , const unsigned int size , bool (*passFunc)(myT , myT)) {
-        myT selectedElementIndex;
-        for (unsigned int sortSpot = 0 ; sortSpot < size - 1; sortSpot++){
-            selectedElementIndex = sortSpot;
-            for (unsigned int i = sortSpot + 1 ; i < size ; i++) {
-                if (passFunc(Arr[selectedElementIndex] , Arr[i]))
-                    selectedElementIndex = i;
-            }
-
-            if (sortSpot != selectedElementIndex)
-                swap(Arr[sortSpot] , Arr[selectedElementIndex]);
-        }
-    }
-
-    static void insertionSort(myT *Arr , const unsigned int size , bool (*passFunc)(myT , myT)) {
-        for (unsigned int sortSpot = 1 ; sortSpot < size ; sortSpot++)
-            for (unsigned int i = sortSpot ; i > 0 ; i--)
-                if (passFunc(Arr[i-1] , Arr[i]))
-                    swap(Arr[i] , Arr[i-1]);
-                else
-                    break;
-    }
-
-    static void quickSort(myT *Arr , const unsigned int size , bool (*passFunc)(myT , myT)) {
-        unsigned int pivitPoint = 0;
-
-        for (unsigned int i = 1 ; i < size ; i++) {
-            if (  passFunc(Arr[pivitPoint] , Arr[i])  ) {
-                swap(Arr[pivitPoint] , Arr[i]);
-                if (i - pivitPoint > 1)
-                    swap(Arr[pivitPoint + 1] , Arr[i]);
-
-                pivitPoint++;
-            }
-        }
-
-        if (pivitPoint > 1)
-            quickSort(Arr , pivitPoint , passFunc);
-
-        const unsigned int rightSize = size - 1 - pivitPoint;
-
-        if (rightSize > 1)
-            quickSort( Arr + pivitPoint + 1 , rightSize , passFunc);
-    }
-
-    static void mergeSort(myT *Arr , const unsigned int size , bool (*passFunc)(myT , myT)) {
-        if (size == 1)
-            return;
+template<class myT>
+class BinaryTree {
+    private:
+        Node<myT> *MainNode;
+        bool (*passFunc)(myT , myT);
         
-        const unsigned int midPoint = size / 2; // velicina lijevog niza je midPoint a velicina desnog je size - midPoint
-        const unsigned int rightArrSize = size - midPoint;
-
-        mergeSort(Arr , midPoint , passFunc); // Lijevi niz
-        mergeSort(Arr + midPoint , rightArrSize , passFunc); // Desni niz
-
-        myT leftArr[midPoint] ,  rightArr[rightArrSize];
-		
-        for (unsigned int i = 0 ; i < midPoint ; i++)
-            leftArr[i] = Arr[i];
+        void DeleteTree(){
+          //
+        }
 
 
-        for (unsigned int i = 0 ; i < rightArrSize ; i++)
-            rightArr[i] = Arr[midPoint + i];
+        void InitCopy(const Node<myT> *nodeToCopy) {
+            if (nodeToCopy == NULL)
+                return;
 
-        unsigned int L , R , C ;
-        L = R = C = 0;
+            Add(nodeToCopy->Data);
 
-        while (L < midPoint && R < rightArrSize) {
-            if (passFunc(leftArr[L] , rightArr[R])) { // Upisi elemenat sa desnog niza kada bude true a obrnuto kada bude false
-                Arr[C] = rightArr[R];
-                R++;
-            } else {
-                Arr[C] = leftArr[L];
-                L++;
+            InitCopy(nodeToCopy->Left);
+            InitCopy(nodeToCopy->Right);
+        }
+        
+        void CopyTree(const BinaryTree &objToCopy){
+          this->passFunc = objToCopy.passFunc;
+          InitCopy(objToCopy.MainNode);
+        }
+    public:
+        BinaryTree(bool (*passFunc)(myT, myT)){
+          this->MainNode = NULL;
+          this->passFunc = passFunc;
+        }
+
+        BinaryTree(myT Data, bool (*passFunc)(myT, myT)){
+          Add(Data);
+          this->passFunc = passFunc;
+        }
+
+        BinaryTree(const BinaryTree &objToCopy){
+          this->MainNode = NULL;
+          CopyTree(objToCopy);
+        }
+
+        ~BinaryTree(){
+          DeleteTree();
+        }
+
+        void Add(myT Data){
+          if(MainNode == NULL){
+            this->MainNode = new Node<myT>;
+            this->MainNode->Parent = this->MainNode->Left = this->MainNode->Right = NULL;
+            this->MainNode->Data = Data;
+          }else {
+            /*
+              1. Pogledaj da li se uslov ispunjava
+              2. (Da uslov se ispunio)
+                  {
+                    Provjeravamo da li je mjesto ULJEVO slobodno ako jeste upisujemo ako nije prebacujemo se na to mjesto
+                    i ponovo radimo korak 1
+                  } inace {
+                    Provjeravamo da li je mjesto UDESNO slobodno ako jeste upisujemo ako nije prebacujemo na to mjesto i 
+                    ponovo radimo korak 1
+                  }
+            */
+                Node<myT> *Current = this->MainNode;
+
+                while(true) {
+
+                    if(passFunc(Data, Current->Data)){
+
+                        if(Current->Left == NULL) {
+                        Current->Left = new Node<myT>;
+                        Current = Current->Left;
+                        break;
+                        }else
+                        Current = Current->Left;
+
+                    } else{
+
+                        if(Current->Right == NULL){
+                        Current->Right = new Node<myT>;
+                        Current = Current->Right;
+                        break;
+                        }else
+                        Current = Current->Right;
+                    }
+                }
+
+                Current->Left = Current->Right = NULL;
+                Current->Data = Data;
             }
-            C++;
         }
 
-        while (L < midPoint){
-            Arr[C] = leftArr[L];
-            L++;
-            C++;
-        }
 
-        while (R < rightArrSize){
-            Arr[C] = rightArr[R];
-            R++;
-            C++;
+        const BinaryTree &operator=(const BinaryTree &objToCopy) {
+          DeleteTree();
+          CopyTree(objToCopy);
+          return *this;
         }
-    }
 };
 
 template<class myT>
@@ -116,29 +113,14 @@ bool LowToHigh(myT CurValue , myT NextValue) {
     return CurValue > NextValue;
 }
 
-
 template<class myT>
 bool HighToLow(myT CurValue , myT NextValue) {
     return CurValue < NextValue;
 }
 
-template<class myT>
-void printArr(myT *Arr , const unsigned int size) {
-    for (unsigned int i = 0 ; i < size; i++) {
-        cout << Arr[i] << ' ';
-    }
-
-    cout << endl;
-}
-
-
 int main(int argc, char** argv) {
     try {
-        int Arr[] = {1,2,3,3,5,6,12};
-
-        printArr<int>(Arr , sizeof(Arr) / sizeof(Arr[0]));
-        SorthingAlgorithm<int>::mergeSort(Arr , sizeof(Arr) / sizeof(Arr[0]) , HighToLow<int>);
-        printArr<int>(Arr , sizeof(Arr) / sizeof(Arr[0]));
+        //
     }catch (const char *errorMsg) {
         cout << errorMsg;
     }
