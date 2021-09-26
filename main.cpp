@@ -15,8 +15,18 @@ class BinaryTree {
         Node<myT> *MainNode;
         bool (*passFunc)(myT , myT);
         
+        void DeleteInit(Node<myT> *Node) {
+          if (Node == NULL)
+            return;
+
+          DeleteInit(Node->Left);
+          DeleteInit(Node->Right);
+
+          delete Node;
+        }
+
         void DeleteTree(){
-          //
+          DeleteInit(this->MainNode);
         }
 
 
@@ -33,6 +43,18 @@ class BinaryTree {
         void CopyTree(const BinaryTree &objToCopy){
           this->passFunc = objToCopy.passFunc;
           InitCopy(objToCopy.MainNode);
+        }
+
+        void printInit(ostream &out , Node<myT> *Node) const{
+           if (Node == NULL)
+            return;
+
+          printInit(out , Node->Left);
+
+          out << Node->Data << ", ";
+
+
+          printInit(out , Node->Right);
         }
     public:
         BinaryTree(bool (*passFunc)(myT, myT)){
@@ -75,22 +97,24 @@ class BinaryTree {
 
                 while(true) {
 
-                    if(passFunc(Data, Current->Data)){
+                    if(Current->Data > Data){
 
-                        if(Current->Left == NULL) {
+                      if(Current->Left == NULL) {
+                        cout << "Add " << Data << " to left from parent node "<< Current->Data << "\n";
                         Current->Left = new Node<myT>;
                         Current = Current->Left;
                         break;
-                        }else
+                      }else
                         Current = Current->Left;
 
                     } else{
 
-                        if(Current->Right == NULL){
+                      if(Current->Right == NULL){
+                        cout << "Add " << Data << " to right from parent node "<< Current->Data << "\n";
                         Current->Right = new Node<myT>;
                         Current = Current->Right;
                         break;
-                        }else
+                      }else
                         Current = Current->Right;
                     }
                 }
@@ -106,6 +130,12 @@ class BinaryTree {
           CopyTree(objToCopy);
           return *this;
         }
+
+
+        friend ostream &operator<<(ostream &out , const BinaryTree &obj){
+          obj.printInit(out , obj.MainNode);
+          return out;
+        }
 };
 
 template<class myT>
@@ -120,7 +150,14 @@ bool HighToLow(myT CurValue , myT NextValue) {
 
 int main(int argc, char** argv) {
     try {
-        //
+        BinaryTree<int> Nesto = LowToHigh<int>;
+
+        Nesto.Add(90);
+
+        for (unsigned int i = 0 ; i <= 800 ; i++)
+          Nesto.Add(i);
+
+        cout << Nesto;
     }catch (const char *errorMsg) {
         cout << errorMsg;
     }
