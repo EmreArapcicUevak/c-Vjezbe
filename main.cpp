@@ -100,7 +100,7 @@ class BinaryTree {
                     if(Current->Data > Data){
 
                       if(Current->Left == NULL) {
-                        cout << "Add " << Data << " to left from parent node "<< Current->Data << "\n";
+                        // cout << "Add " << Data << " to left from parent node "<< Current->Data << "\n";
                         Current->Left = new Node<myT>;
                         Current = Current->Left;
                         break;
@@ -110,7 +110,7 @@ class BinaryTree {
                     } else{
 
                       if(Current->Right == NULL){
-                        cout << "Add " << Data << " to right from parent node "<< Current->Data << "\n";
+                        // cout << "Add " << Data << " to right from parent node "<< Current->Data << "\n";
                         Current->Right = new Node<myT>;
                         Current = Current->Right;
                         break;
@@ -136,6 +136,21 @@ class BinaryTree {
           obj.printInit(out , obj.MainNode);
           return out;
         }
+
+        bool searchBinaryTree(const myT &Data) {
+          Node<myT> *curNode = this->MainNode;
+          while (curNode != NULL){
+            if (Data > curNode->Data){
+              curNode = curNode->Right;
+            }else if (Data < curNode->Data){
+              curNode = curNode->Left;
+            }else {
+              return true;
+            }
+          }
+
+          return false;
+        }
 };
 
 template<class myT>
@@ -157,7 +172,7 @@ int main(int argc, char** argv) {
         for (unsigned int i = 0 ; i <= 800 ; i++)
           Nesto.Add(i);
 
-        cout << Nesto;
+        cout << Nesto.searchBinaryTree(800) << " " << Nesto.searchBinaryTree(805);
     }catch (const char *errorMsg) {
         cout << errorMsg;
     }
