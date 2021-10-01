@@ -1,178 +1,60 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-template<class myT>
-struct Node{
-  myT Data;
-  Node<myT> *Parent;
-  Node<myT> *Left;
-  Node<myT> *Right;
-};
-
-template<class myT>
-class BinaryTree {
-    private:
-        Node<myT> *MainNode;
-        bool (*passFunc)(myT , myT);
-        
-        void DeleteInit(Node<myT> *Node) {
-          if (Node == NULL)
-            return;
-
-          DeleteInit(Node->Left);
-          DeleteInit(Node->Right);
-
-          delete Node;
-        }
-
-        void DeleteTree(){
-          DeleteInit(this->MainNode);
-        }
-
-
-        void InitCopy(const Node<myT> *nodeToCopy) {
-            if (nodeToCopy == NULL)
-                return;
-
-            Add(nodeToCopy->Data);
-
-            InitCopy(nodeToCopy->Left);
-            InitCopy(nodeToCopy->Right);
-        }
-        
-        void CopyTree(const BinaryTree &objToCopy){
-          this->passFunc = objToCopy.passFunc;
-          InitCopy(objToCopy.MainNode);
-        }
-
-        void printInit(ostream &out , Node<myT> *Node) const{
-           if (Node == NULL)
-            return;
-
-          printInit(out , Node->Left);
-
-          out << Node->Data << ", ";
-
-
-          printInit(out , Node->Right);
-        }
-    public:
-        BinaryTree(bool (*passFunc)(myT, myT)){
-          this->MainNode = NULL;
-          this->passFunc = passFunc;
-        }
-
-        BinaryTree(myT Data, bool (*passFunc)(myT, myT)){
-          Add(Data);
-          this->passFunc = passFunc;
-        }
-
-        BinaryTree(const BinaryTree &objToCopy){
-          this->MainNode = NULL;
-          CopyTree(objToCopy);
-        }
-
-        ~BinaryTree(){
-          DeleteTree();
-        }
-
-        void Add(myT Data){
-          if(MainNode == NULL){
-            this->MainNode = new Node<myT>;
-            this->MainNode->Parent = this->MainNode->Left = this->MainNode->Right = NULL;
-            this->MainNode->Data = Data;
-          }else {
-            /*
-              1. Pogledaj da li se uslov ispunjava
-              2. (Da uslov se ispunio)
-                  {
-                    Provjeravamo da li je mjesto ULJEVO slobodno ako jeste upisujemo ako nije prebacujemo se na to mjesto
-                    i ponovo radimo korak 1
-                  } inace {
-                    Provjeravamo da li je mjesto UDESNO slobodno ako jeste upisujemo ako nije prebacujemo na to mjesto i 
-                    ponovo radimo korak 1
-                  }
-            */
-                Node<myT> *Current = this->MainNode;
-
-                while(true) {
-
-                    if(Current->Data > Data){
-
-                      if(Current->Left == NULL) {
-                        // cout << "Add " << Data << " to left from parent node "<< Current->Data << "\n";
-                        Current->Left = new Node<myT>;
-                        Current = Current->Left;
-                        break;
-                      }else
-                        Current = Current->Left;
-
-                    } else{
-
-                      if(Current->Right == NULL){
-                        // cout << "Add " << Data << " to right from parent node "<< Current->Data << "\n";
-                        Current->Right = new Node<myT>;
-                        Current = Current->Right;
-                        break;
-                      }else
-                        Current = Current->Right;
-                    }
-                }
-
-                Current->Left = Current->Right = NULL;
-                Current->Data = Data;
-            }
-        }
-
-
-        const BinaryTree &operator=(const BinaryTree &objToCopy) {
-          DeleteTree();
-          CopyTree(objToCopy);
-          return *this;
-        }
-
-
-        friend ostream &operator<<(ostream &out , const BinaryTree &obj){
-          obj.printInit(out , obj.MainNode);
-          return out;
-        }
-
-        bool searchBinaryTree(const myT &Data) {
-          Node<myT> *curNode = this->MainNode;
-          while (curNode != NULL){
-            if (Data > curNode->Data){
-              curNode = curNode->Right;
-            }else if (Data < curNode->Data){
-              curNode = curNode->Left;
-            }else {
-              return true;
-            }
-          }
-
-          return false;
-        }
-};
-
-template<class myT>
-bool LowToHigh(myT CurValue , myT NextValue) {
-    return CurValue > NextValue;
-}
-
-template<class myT>
-bool HighToLow(myT CurValue , myT NextValue) {
-    return CurValue < NextValue;
-}
 
 int main(int argc, char** argv) {
     try {
-        BinaryTree<int> Nesto = LowToHigh<int>;
+      vector<string> strings; // Ako konstruktoru damo neki broj x on ce staviti da pocetni size bude x
 
-        Nesto.Add(90);
+      strings.push_back("One");
+      strings.push_back("Two");
+      strings.push_back("Three");
 
-        for (unsigned int i = 0 ; i <= 800 ; i++)
-          Nesto.Add(i);
+      cout << strings.size() << " " << strings.capacity() << " " << strings.max_size() <<'\n'; // size je velicina popunjenog niza , capacity je trenutna cijela velicina niza
 
-        cout << Nesto.searchBinaryTree(800) << " " << Nesto.searchBinaryTree(805);
+
+      for (unsigned int i = 0 ; i < strings.size() ; i++)
+        cout << strings[i] << " ";
+
+      // Ovako mozemo i nepravi nikakvu smetnju jel je vektor sami niz ali je bolje da se naucimo praviti for petlje sa iteratorima da mozemo tako i kroz stringove ici
+
+      cout << endl;
+
+      for (vector<string>::iterator it = strings.begin() ; it != strings.end() ; it++) // moze biti it++ ili it += 1 jedno i drugo radi
+        cout << *it << " ";
+
+      cout << endl << endl;
+
+      /*
+          Sad ce mo da porbamo da napravimo matricu koristeci vektore a NE nizove (ma da tu nema velike razilke)
+      */
+
+
+      vector< vector<int> > grid(3 , vector<int>(4 , 0)); 
+      /* 
+        Ovdje smo napravili vektor koji prima tipove vektor koji primaju tip int i 
+        stavili smo defaltni size da bude 3 nako cega smo mu dali defaltne vrijednosti za ta 3 mjesta sto je
+        podatak tipa vector (tacnije receno objekat) koji sadzri tipove podataka int i koji po defaltu dobija size od 4 
+        i njegova defaultna vrijednost za svaki njegov element je 0.
+      */
+
+      for (vector<vector<int>>::iterator row = grid.begin() ; row != grid.end() ; row++){
+         for (vector<int>::iterator collum = (*row).begin() ; collum != (*row).end() ; collum++)
+          cout << *collum << " ";
+        
+          cout << endl;
+      }
+       
+
+      /*
+        Ispis na kraju ce biti 
+
+        0 0 0 0 
+        0 0 0 0 
+        0 0 0 0 
+      */
+
     }catch (const char *errorMsg) {
         cout << errorMsg;
     }
