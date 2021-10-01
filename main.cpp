@@ -1,59 +1,41 @@
 #include <iostream>
-#include <vector>
+#include <list>
 using namespace std;
 
 
 int main(int argc, char** argv) {
     try {
-      vector<string> strings; // Ako konstruktoru damo neki broj x on ce staviti da pocetni size bude x
+      list<int> numbers;
 
-      strings.push_back("One");
-      strings.push_back("Two");
-      strings.push_back("Three");
-
-      cout << strings.size() << " " << strings.capacity() << " " << strings.max_size() <<'\n'; // size je velicina popunjenog niza , capacity je trenutna cijela velicina niza
+      for (unsigned int i = 1 ; i <= 3 ; i++)
+        numbers.push_back(i); // Dodajemo brojeve od 1 do 3 od nazad
 
 
-      for (unsigned int i = 0 ; i < strings.size() ; i++)
-        cout << strings[i] << " ";
+      numbers.push_front(7); // dodajemo broj 7 na pocetak
 
-      // Ovako mozemo i nepravi nikakvu smetnju jel je vektor sami niz ali je bolje da se naucimo praviti for petlje sa iteratorima da mozemo tako i kroz stringove ici
+      list<int>::iterator it = numbers.begin();
+      it++;
+      numbers.insert(it , 20); // ovo ce nam gurnuti iterator za jedno unaprijed
 
-      cout << endl;
+      cout << "Elemement na trecem mjestu je " << *it << endl;
 
-      for (vector<string>::iterator it = strings.begin() ; it != strings.end() ; it++) // moze biti it++ ili it += 1 jedno i drugo radi
+      cout << "Ispis prije brisanje :\n";
+
+      for (list<int>::iterator it = numbers.begin() ; it != numbers.end() ; it++)
         cout << *it << " ";
 
-      cout << endl << endl;
+      //numbers.erase(++it); Ovo NE smijemo raditi ovako AKO smo mislili opet koristiti ovaj iterator jel ovaj iterator ce pokazivati na IZBRISANU memoriju sto neki drugi program moze mijenjati
 
-      /*
-          Sad ce mo da porbamo da napravimo matricu koristeci vektore a NE nizove (ma da tu nema velike razilke)
-      */
+      cout << '\n';
 
+      it = numbers.erase(++it);
 
-      vector< vector<int> > grid(3 , vector<int>(4 , 0)); 
-      /* 
-        Ovdje smo napravili vektor koji prima tipove vektor koji primaju tip int i 
-        stavili smo defaltni size da bude 3 nako cega smo mu dali defaltne vrijednosti za ta 3 mjesta sto je
-        podatak tipa vector (tacnije receno objekat) koji sadzri tipove podataka int i koji po defaltu dobija size od 4 
-        i njegova defaultna vrijednost za svaki njegov element je 0.
-      */
+      cout << "Ispis poslje brisanje :\n";
 
-      for (vector<vector<int>>::iterator row = grid.begin() ; row != grid.end() ; row++){
-         for (vector<int>::iterator collum = (*row).begin() ; collum != (*row).end() ; collum++)
-          cout << *collum << " ";
-        
-          cout << endl;
-      }
-       
+      for (list<int>::iterator it = numbers.begin() ; it != numbers.end() ; it++)
+        cout << *it << " ";
 
-      /*
-        Ispis na kraju ce biti 
-
-        0 0 0 0 
-        0 0 0 0 
-        0 0 0 0 
-      */
+      cout << '\n' << *it;
 
     }catch (const char *errorMsg) {
         cout << errorMsg;
